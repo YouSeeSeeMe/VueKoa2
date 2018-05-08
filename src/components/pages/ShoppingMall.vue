@@ -17,25 +17,56 @@
         <div class="swiper-area">
             <van-swipe :autoplay="3000">
                 <van-swipe-item v-for="( banner, index ) in bannerPicArray" :key="index">
-                    <img width="100%" v-lazy="banner.imageUrl" alt="">
+                    <img width="100%" v-lazy="banner.image" alt="">
                 </van-swipe-item>
             </van-swipe>
+        </div>
+        <!-- type bar -->
+        <div class="type-bar">
+            <div v-for="( cate, index ) in category" :key="index">
+                <img v-lazy="cate.image" alt="" width="90%">
+                <span>{{cate.mallCategoryName}}</span>
+            </div>
+        </div>
+        <!--AD banner area-->
+        <div class="ad-banner">
+            <img v-lazy="adBanner.PICTURE_ADDRESS" width="100%">
         </div>
     </div>
 </template>
 
 <script>
+    import axios from 'axios'
     export default {
         data() {
             return {
                 locationIcon: require('../../assets/images/locationa.png'),
-                bannerPicArray:[
-                    {imageUrl:'http://7xjyw1.com1.z0.glb.clouddn.com/simleVueDemoPic001.jpg'},
-                    {imageUrl:'http://7xjyw1.com1.z0.glb.clouddn.com/simleVueDemoPic002.jpg'},
-                    {imageUrl:'http://7xjyw1.com1.z0.glb.clouddn.com/simleVueDemoPic003.jpg'},
-                ]
+                bannerPicArray:[],
+                category:[],
+                adBanner:''
             }
         },
+        created() {
+            axios({
+                url:'https://www.easy-mock.com/mock/5af1968fca5c747a72cdb001/index/index',
+                method:'get'
+            })
+            .then(response => {
+                console.log(response);
+                if( response.status == '200' ) {
+                    let data = response.data.data;
+                    //获取分类
+                    this.category = data.category; 
+                    //获取广告图片
+                    this.adBanner = data.advertesPicture;   
+                    //轮播图
+                    this.bannerPicArray = data.slides
+                }
+            })
+            .catch(error =>{
+                console.log(error);
+            }) 
+        }
     }
 </script>
 
@@ -61,7 +92,21 @@
     }
     .swiper-area{
         clear: both;
-        max-height: 15rem;
+        max-height: 12rem;
         overflow: hidden;
+    }
+    .type-bar{
+        background-color: #fff;
+        margin:0 .3rem .3rem .3rem;
+        border-radius: .3rem;
+        font-size:14px;
+        display: flex;
+        flex-direction:row;
+        flex-wrap:nowrap;
+    }
+    .type-bar div{
+        padding: .3rem;
+        font-size: 12px;
+        text-align: center;
     }
 </style>

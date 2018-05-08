@@ -13,6 +13,14 @@
                 </van-col>
             </van-row>
         </div>
+        <!-- swipe area -->
+        <div class="swiper-area">
+            <van-swipe :autoplay="3000">
+                <van-swipe-item v-for="( banner, index ) in bannerPicArray" :key="index">
+                    <img width="100%" v-lazy="banner.imageUrl" alt="">
+                </van-swipe-item>
+            </van-swipe>
+        </div>
     </div>
 </template>
 
@@ -20,7 +28,12 @@
     export default {
         data() {
             return {
-                locationIcon: require('../../assets/images/locationa.png')
+                locationIcon: require('../../assets/images/locationa.png'),
+                bannerPicArray:[
+                    {imageUrl:'http://7xjyw1.com1.z0.glb.clouddn.com/simleVueDemoPic001.jpg'},
+                    {imageUrl:'http://7xjyw1.com1.z0.glb.clouddn.com/simleVueDemoPic002.jpg'},
+                    {imageUrl:'http://7xjyw1.com1.z0.glb.clouddn.com/simleVueDemoPic003.jpg'},
+                ]
             }
         },
     }
@@ -45,5 +58,10 @@
     .location-icon{
         padding-top: .2rem;
         padding-left: .3rem;
+    }
+    .swiper-area{
+        clear: both;
+        max-height: 15rem;
+        overflow: hidden;
     }
 </style>

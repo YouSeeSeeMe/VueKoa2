@@ -3,7 +3,7 @@
         <div class="search-bar">
             <van-row>
                 <van-col span="3">
-                    <img :src="locationIcon" class="location-icon" width="80%">
+                    <img :src="locationIcon" class="location-icon" width="60%">
                 </van-col>
                 <van-col span="16">
                     <input type="text" class="search-input">
@@ -47,8 +47,11 @@
                         </div>
                     </swiper-slide>
                 </swiper>
+                <!-- <swiperDefault></swiperDefault> -->
             </div>
         </div>
+
+        <floorComponent :floorData="floor1"></floorComponent>
     </div>
 </template>
 
@@ -57,9 +60,13 @@
     import 'swiper/dist/css/swiper.css'
     import { swiper, swiperSlide } from 'vue-awesome-swiper'
 
+    //引入组件 - swiper
+    import swiperDefault from '../swiper/swiper'
+    import floorComponent  from '../component/floorComponent'
+
     export default {
         components: {
-            swiper, swiperSlide
+            swiper, swiperSlide, swiperDefault, floorComponent
         },
         data() {
             return {
@@ -71,6 +78,7 @@
                 swiperOptions:{
                     slidesPerView: 3
                 },
+                floor1:''
             }
         },
         created() {
@@ -90,6 +98,8 @@
                     this.bannerPicArray = data.slides;
                     //推荐商品
                     this.recommendGoods = data.recommend;
+
+                    this.floor1 = data.floor1;         //楼层1数据
                 }
             })
             .catch(error =>{
@@ -119,7 +129,7 @@
         color: #fff;
     }
     .location-icon{
-        padding-top: .2rem;
+        padding-top: .32rem;
         padding-left: .3rem;
     }
     .swiper-area{

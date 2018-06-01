@@ -3,34 +3,35 @@
         <div class="search-bar">
             <van-row>
                 <van-col span="3">
-                    <img :src="locationIcon" class="location-icon" width="60%">
+                    <img :src="locationIcon" width="80%" class="location-icon"/>
                 </van-col>
                 <van-col span="16">
-                    <input type="text" class="search-input">
+                    <input type="text" class="search-input" />
                 </van-col>
                 <van-col span="5">
                     <van-button size="mini">查找</van-button>
                 </van-col>
             </van-row>
         </div>
-        <!-- swipe area -->
+        <!--swiper area-->
         <div class="swiper-area">
-            <van-swipe :autoplay="3000">
-                <van-swipe-item v-for="( banner, index ) in bannerPicArray" :key="index">
-                    <img width="100%" v-lazy="banner.image" alt="">
+            <van-swipe :autoplay="1000">
+                <van-swipe-item v-for="( banner ,index) in bannerPicArray" :key="index" >
+                    <img v-lazy="banner.image" width="100%"/>
                 </van-swipe-item>
             </van-swipe>
-        </div>
-        <!-- type bar -->
+        </div>  
+        <!--type bar-->
         <div class="type-bar">
-            <div v-for="( cate, index ) in category" :key="index">
-                <img v-lazy="cate.image" alt="" width="90%">
+            <div v-for="(cate,index) in category" :key="index">
+                <img v-lazy="cate.image" width="90%">
                 <span>{{cate.mallCategoryName}}</span>
+
             </div>
-        </div>
-        <!--AD banner area-->
-        <div class="ad-banner">
-            <img v-lazy="adBanner" width="100%">
+        </div>  
+        <!--adbanner area-->
+        <div>
+            <img v-lazy="adBanner" width="100%" />
         </div>
         <!--Recommend goods area-->
         <div class="recommend-area">
@@ -38,122 +39,152 @@
                 商品推荐
             </div>
             <div class="recommend-body">
-                <swiper :options="swiperOptions" >
-                    <swiper-slide v-for="( item , index ) in recommendGoods" :key="index">
-                        <div class="recommend-item">
-                            <img :src="item.image" width="100%">
-                            <div>{{ item.goodsName }}</div>
-                            <div>￥{{item.price}} (￥{{item.mallPrice}})</div>
-                        </div>
-                    </swiper-slide>
+                <swiper :options="swiperOption">
+                   <swiper-slide v-for="(item,index) in recommendGoods " :key="index" >
+                       <div class="recommend-item">
+                           <img :src="item.image" width="80%">
+                           <div>{{item.goodsName}}</div>
+                           <div>￥{{item.price | moneyFilter }}(￥{{item.mallPrice | moneyFilter}})</div>
+                       </div>
+                   </swiper-slide> 
                 </swiper>
-                <!-- <swiperDefault></swiperDefault> -->
             </div>
         </div>
-
-        <floorComponent :floorData="floor1"></floorComponent>
+        <floor-component :floorData="floor1" :floorTitle="floorName.floor1"></floor-component>
+        <floor-component :floorData="floor2" :floorTitle="floorName.floor2"></floor-component>
+        <floor-component :floorData="floor3" :floorTitle="floorName.floor3"></floor-component>
+        <!--Hot Area-->
+        <div class="hot-area">
+            <div class="hot-title">热卖商品</div>
+            <div class="hot-goods">
+                <van-list>
+                    <van-row>
+                        <van-col span="12" v-for="(item, index) in hotGoods" :key="index">
+                            <goods-info
+                               :goodsImage="item.image"
+                               :goodsName="item.name"
+                               :goodsPrice="item.price" 
+                            ></goods-info>
+                        </van-col>
+                    </van-row>
+                </van-list>
+            </div>
+        </div>
+        
     </div>
 </template>
 
 <script>
     import axios from 'axios'
     import 'swiper/dist/css/swiper.css'
-    import { swiper, swiperSlide } from 'vue-awesome-swiper'
-
-    //引入组件 - swiper
-    import swiperDefault from '../swiper/swiper'
-    import floorComponent  from '../component/floorComponent'
+    import {swiper , swiperSlide} from 'vue-awesome-swiper'
+ 
+    import floorComponent from '../component/floorComponent'
+    import { toMoney } from '@/filter/moneyFilter.js'
+    import goodsInfo from '../component/goodsInfoComponent'
 
     export default {
-        components: {
-            swiper, swiperSlide, swiperDefault, floorComponent
-        },
         data() {
             return {
-                locationIcon: require('../../assets/images/locationa.png'),
+                swiperOption:{
+                    slidesPerView:3
+                },
+                msg: 'Shopping Mall',
+                locationIcon: require('../../assets/images/location.png'),
                 bannerPicArray:[],
                 category:[],
                 adBanner:'',
                 recommendGoods:[],
-                swiperOptions:{
-                    slidesPerView: 3
-                },
-                floor1:''
+                floor1:[],
+                floor2:[],
+                floor3:[],
+                floorName:{},
+                // 热卖商品
+                hotGoods:[],
             }
         },
-        created() {
+        components:{swiper, swiperSlide, floorComponent, goodsInfo},
+        created(){
             axios({
-                url:'https://www.easy-mock.com/mock/5af1968fca5c747a72cdb001/index/index',
-                method:'get'
+                url:'https://www.easy-mock.com/mock/5ae2eeb23fbbf24d8cd7f0b6/SmileVue/index',
+                method:'get',
             })
-            .then(response => {
-                console.log(response);
-                if( response.status == '200' ) {
-                    let data = response.data.data;
-                    //获取分类
-                    this.category = data.category; 
-                    //获取广告图片
-                    this.adBanner = data.advertesPicture.PICTURE_ADDRESS;   
-                    //轮播图
-                    this.bannerPicArray = data.slides;
-                    //推荐商品
+            .then(response=>{
+                console.log(response)
+                if(response.status==200){
+                    let data  = response.data.data;
+                    this.category=data.category;
+                    this.adBanner = data.advertesPicture.PICTURE_ADDRESS;
+                    this.bannerPicArray= data.slides;
                     this.recommendGoods = data.recommend;
-
-                    this.floor1 = data.floor1;         //楼层1数据
+                    this.floor1 = data.floor1;
+                    this.floor2 = data.floor2;
+                    this.floor3 = data.floor3;
+                    this.floorName = data.floorName;
+                    //热卖商品
+                    this.hotGoods = data.hotGoods
+                   
+                   
+            
                 }
             })
-            .catch(error =>{
-                console.log(error);
-            }) 
+            .catch(error=>{
+                console.log(error)
+            })
         },
-        methods: {
+        filters: {
+            moneyFilter(money) {
+                return toMoney(money)
+            }
         }
+       
     }
 </script>
 
 <style scoped>
     .search-bar{
-        height: 2.2rem;
+        height:2.2rem;
         background-color: #e5017d;
-        line-height:2.2rem;
+        line-height: 2.2rem;
         overflow: hidden;
     }
     .search-input{
-        width: 100%;
+        width:100%;
         height: 1.3rem;
-        border-top: 0;
-        border-left: 0;
-        border-right: 0;
-        border-bottom: 1px solid #fff !important;
+        border-top:0px;
+        border-left:0px;
+        border-right:0px;
+        border-bottom:1px solid #fff !important;
         background-color: #e5017d;
-        color: #fff;
+        color:#fff;
     }
     .location-icon{
-        padding-top: .32rem;
-        padding-left: .3rem;
+        padding-top:.2rem;
+        padding-left:.3rem;
     }
     .swiper-area{
-        clear: both;
-        height: 8rem;
+        clear:both;
+        max-height:15rem;
         overflow: hidden;
     }
+
     .type-bar{
         background-color: #fff;
         margin:0 .3rem .3rem .3rem;
         border-radius: .3rem;
         font-size:14px;
-        display: flex;
+        display:flex;
         flex-direction:row;
         flex-wrap:nowrap;
     }
     .type-bar div{
-        padding: .3rem;
-        font-size: 12px;
+        padding:.3rem;
+        font-size:12px;
         text-align: center;
     }
     .recommend-area{
-       background-color: #fff;
-       margin-top: .3rem;
+        background-color: #fff;
+        margin-top:.3rem;
     }
     .recommend-title{
         border-bottom:1px solid #eee;
@@ -161,10 +192,22 @@
         padding:.2rem;
         color:#e5017d;
     }
-    .recommend-item{
-      width:99%;
-      border-right: 1px solid #eee;
-      font-size: 12px;
-      text-align: center;
+    .recommend-body{
+        border-bottom:1px solid #eee;
     }
+    .recommend-item{
+        width:99%;
+        border-right:1px solid #eee;
+        font-size:12px;
+        text-align: center;
+    }
+    .hot-area{
+        text-align: center;
+        font-size:14px;
+        height: 1.8rem;
+        line-height:1.8rem;
+    }
+
+
+
 </style>

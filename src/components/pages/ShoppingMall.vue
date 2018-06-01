@@ -76,6 +76,7 @@
 
 <script>
     import axios from 'axios'
+    import url from '@/serviceAPI.config.js'
     import 'swiper/dist/css/swiper.css'
     import {swiper , swiperSlide} from 'vue-awesome-swiper'
  
@@ -106,7 +107,7 @@
         components:{swiper, swiperSlide, floorComponent, goodsInfo},
         created(){
             axios({
-                url:'https://www.easy-mock.com/mock/5ae2eeb23fbbf24d8cd7f0b6/SmileVue/index',
+                url:url.getShopingMallInfo,
                 method:'get',
             })
             .then(response=>{
